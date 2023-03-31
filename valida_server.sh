@@ -1,6 +1,8 @@
 #!/bin/bash
 
-if systemctl is-active --quiet httpd.service=="active"; then
+verificador=$(systemctl is-active httpd.service)
+
+if [ $verificador ]; then
 	status="online"
 else
 	status="offline"
