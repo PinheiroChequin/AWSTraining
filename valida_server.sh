@@ -9,7 +9,7 @@ else
 	status="offline"
 fi
 
-registro_mesg_on="$data_hora | Apache server | $status | Seu servidor apache está ONLINE :)"
+registro_mesg_on="$data_hora | Apache server | $status | Seu servidor apache está ONLINE :D"
 registro_mesg_off="$data_hora | Apache server | $status | Seu servidor apache está OFFLINE :("
 
 if [ $status == "online" ]; then
