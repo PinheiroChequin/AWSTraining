@@ -108,5 +108,87 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   
   Nota: o Apache já foi instalado e habilitado dentro do passo de criação da instância EC2.
   
-  ### Criando os scripts.
+  ### Criando o script.
+  1. O arquivo de texto para utilizar o script será criado dentro do próprio diretório onde o EFS está montado através do comando:
+  ``` 
+  sudo touch valida_server.sh
+  ```
+  Acessar o arquivo com o comando:
   
+  ``` 
+  sudo nano valida_server.sh
+  ```
+  
+ 2. Script utilizado:
+ 
+```  
+#!/bin/bash
+
+verificador=$(systemctl is-active httpd.service)
+data_hora=$(date +"%Y-%m-%d %H:%M:%S")
+
+if [ $verificador ]; then
+	status="online"
+else
+	status="offline"
+fi
+
+registro_mesg_on="$data_hora | Apache server | $status | Seu servidor apache está ONLINE :D"
+registro_mesg_off="$data_hora | Apache server | $status | Seu servidor apache está OFFLINE :("
+
+if [ $status == "online" ]; then
+	echo "$registro_mesg_on" >> /efs/Marcelo/online/on_server.log
+else
+	echo "$registro_mesg_off" >> /efs/Marcelo/offline/off_server.log
+fi
+```
+No script acima é utilizado a variável 'verificador' para armazenar a informação se o Apache está ativo no Linux e a variável 'data_hora' para armazenar data e hora do sistema Linux;
+
+Em sequência, no if/else a variável 'status' receberá a devida informação do estado do Apache. Nota: caso o Apache esteja ativo, no if/else, ele retorna verdadeiro, e caso não esteja, retorna falso;
+
+Depois disso, temos uma mensagem personalizada de online ou offline que será exibida dentro do arquivo gerado por esse script;
+
+Assim, o if/else que vem em seguida tem como finalidade comparar a variável 'status', nesse caso terá um diretório diferente para cada .log gerado pelo script. 
+
+3. É preciso dar permissão de execução para o recente arquivo criado:
+
+  ``` 
+  sudo chmod +x valida_server.sh
+  ```
+
+4. Para automatizar a execução do script acima usaremos crontab.
+
+Caso não tenha instalado cron use:
+  ``` 
+  sudo yum cron
+  ```
+
+Logo após o commando para acessar o crontab:
+ ``` 
+ sudo crontab -e
+ ```
+ 
+ 5. Faremos com que o script seja executado a cada 5 minutos.
+ 
+ O funcionamento do crontab é o seguinte:
+  ``` 
+  .---------------- minutos (0 - 59) 
+|  .------------- horas (0 - 23)
+|  |  .---------- dia do mês (1 - 31)
+|  |  |  .------- mês (1 - 12) OR jan,feb,mar,apr ... 
+|  |  |  |  .---- dia da semana (0 - 6) (Domingo=0) 
+|  |  |  |  |
+*  *  *  *  *  commando a ser executado
+  ``` 
+  
+  Sendo assim para o script criado ser executado a cada 5 minutos será:
+  
+ ``` 
+*/5 * * * * /path/to/valida_server.sh
+
+ ```
+ 
+No caso acima é necessário passar o caminho do diretório correto onde se encontra o script;
+
+
+Com todos esses passos temos um ambiente na AWS com uma instância EC2, um Elastic IP, as portas necessárias liberadas e o NFS configurado. Além disso, temos um servidor Apache e um script configurado para validar se o serviço está online e enviar o resultado para o diretório no NFS a cada 5 minutos.
