@@ -24,14 +24,14 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   8. Anotar o nome da chave pública, que será usada para acessar a instância EC2.
  
 ### Criar 1 instância EC2 com o sistema operacional Amazon Linux 2 (Família t3.small, 16 GB SSD)
-  1. Acesse o console AWS;
+  1. Acessar o console AWS;
   2. Selecionar a opção "EC2";
   3. Clicar em "Launch Instance" (Executar instância);
   4. Selecionar a opção "Amazon Linux 2";
   5. Selecionar a família "t3.small"
   6. Selecionar o par de chaves criado anteriormente;
   7. Siga os passos de configuração da instância, como nome, tipo de instância, configuração de rede, segurança, etc.;
-  8. Selecione 16GB de armazenameto SSD;
+  8. Selecionar 16GB de armazenameto SSD;
   9. Em detalhes avançados, encontrar o campo "userdata" (dados do usuário) e colocar o seguinte script:
   
   ```
@@ -43,6 +43,27 @@ Este repositório tem como objetivo conter uma documentação necessária para c
    ```
    Esse script atualiza o sistema operacional, instala o Apache, habilita e inicia, respectivamente. Será útil para adiantar a criação.
 
-  10. Inicie a instância.
+  10. Iniciar a instância.
   
+  ### Gerar um IP elástico e anexar a instância EC2
+  1. Acessar o console AWS;
+  2. Selecionar a opção "EC2";
+  3. Na barra de navegação lateral, selecionar "Elastic IPs" (IP elástico);
+  4. Clicar em "Allocate new address" (alocar novo endereço);
+  5. Selecionar o elastic IP criado e clique em "Actions" (Ações);
+  6. Selecionar a opção "Associate IP address" (Alocar endereço de IP);
+  7. Selecionar a instância EC2 criada e clique em "Associate" (Associar).
   
+  ### Liberar as portas de comunicação para acesso público: (22/TCP, 111/TCP e UDP, 2049/TCP/UDP, 80/TCP, 443/TCP)
+  1. Acessar o console AWS;
+  2. Selecionar a opção "EC2";
+  3. Na barra de navegação lateral, selecionar "Security groups" (Grupos de segurança);
+  4. Selecionar o grupo de segurança vinculado a instância EC2 (Geralmente por padrão, o primeiro grupo criado tem o nome de "launch-wizard-1")
+  5. Clicar em "Edit inbound rules"(Editar regras de entrada)
+  6. Adicionar as regras especificadas acima.
+  
+  ![image](https://user-images.githubusercontent.com/117855728/229399378-9c173dd1-ef24-46b7-bf41-b00a39675d0b.png)
+  
+  ##Requisitos Linux:
+
+
