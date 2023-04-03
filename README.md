@@ -13,6 +13,10 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   <li>Subir o Apache para o servidor;</li>
   <li>Criar scripts para verificar o estado do servidor apache dentro da instância EC2.</li>
 
+
+## Configurando ambiente AWS:
+
+
 ### Gerar uma chave pública para acessar o ambiente
   1. Acessar o console AWS;
   2. Selecionar a opção "EC2";
@@ -39,8 +43,7 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   yum update -y
   yum install httpd -y
   systemctl enable httpd && systemctl start httpd
-  
-   ```
+  ```
    Esse script atualiza o sistema operacional, instala o Apache, habilita e inicia, respectivamente. Será útil para adiantar a criação.
 
   10. Iniciar a instância.
@@ -64,6 +67,46 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   
   ![image](https://user-images.githubusercontent.com/117855728/229399378-9c173dd1-ef24-46b7-bf41-b00a39675d0b.png)
   
-  ##Requisitos Linux:
-
-
+  
+  ## Configurando Linux:
+  
+  
+  ### Configurando NFS
+  Para esse passo será usado o próprio sistema de arquivos da AWS, o "Elastic File System" (EFS)
+  1. Acessar pelo console o EFS;
+  2. Selecionar "Create file system" (Criar sistema de arquivos);
+  3. Selecionar a VPC configurada na instância EC2;
+  4. Selecionar "Standard" ou "One zone".
+  Standard: Nessa opção o sistema de arquivos estará disponível em todas as zonas disponíveis da região onde se encontra. Assim, tem-se um aumento tanto a disponibilidade como na taxação.
+  One Zone: Nessa opção o sistema de arquivos estará disponível em apenas uma das zonas disponíveis da região, por exemplo us-east-1a. Assim, tem-se uma diminuição tanto da disponibilidade como na taxação.
+  5. Clicar em "create" (criar), posteriormente o sistema de arquivos criado será anexado a instância EC2.
+  
+  6. Instalar o NFS em sua instância EC2:
+  ```
+  sudo yum install -y nfs-utils
+  ```
+  7. Criar um diretório para o sistema de arquivos, por exemplo:
+  ```
+  sudo mkdir /path/to/your_directory_name
+  ```
+  Ness caso deve-se colocar o caminho onde queira criar o diretório, o qual será usado como base para o EFS. 
+  
+  8.  Para montar o sistema de arquivos na instância EC2 é preciso acesssar o diretório onde fica o arquivo 'fstab'.
+  O arquivo fica em: /etc
+  Após estar no diretório correto, acessar o arquivo atráves do comando:
+  ```
+  sudo nano fstab
+  ```
+  O comando abaixo deve ser colocado dentro do arquivo fstab:
+  ```
+  [fs-XXXXXXXX.efs.REGION.amazonaws.com]:/ /path/to/mount/dir nfs4 defaults,_netdev 0 0
+  ```
+  O comando entre colchetes é o nome de DNS do EFS. O DNS pode ser conseguido ao visualizar mais detalhes em seu sistema de arquivos;
+  E o '/path/to/mount/dir' é o diretório criado anteriormente para montar o sistema de arquivos.
+  
+  9.Por fim salve o arquivo e reinicie sua instância;
+  
+  Nota: o Apache já foi instalado e habilitado dentro do passo de criação da instância EC2.
+  
+  ### Criando os scripts.
+  
